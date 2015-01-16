@@ -8,9 +8,9 @@ A simple board game, where you have to make all tiles the same color. Clicking a
 # Running
 
 1. Download the project
-2. Open index.html
+2. Open index.html (IE, Firefox. See about Chrome the note below).
 
-NOTE: May not work in Chrome, because of security reasons - it doesn't allow loading of the assets.
+> If you want to open with Chrome, the files have to be served through a web server - nginx, iis, apache.
 
 # Screenshot
 
