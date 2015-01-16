@@ -1,0 +1,107 @@
+<html>
+<head>
+	<script src="js/phaser.js"></script>
+	<style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+	<script type='text/javascript'>
+		var dx = [ 1, -1, 0, 0 ]; // move by x
+		var dy = [ 0, 0, 1, -1 ]; // move by y
+
+		// track all tiles for easy access
+		var moves = 0;
+		var boardSize = 5;
+		var tilesMatrix = new Array(boardSize);
+		for(var i=0;i<boardSize;i++) tilesMatrix[i] = new Array(boardSize);
+
+		// setup the game stage
+		var spaceBetweenTiles = 2;
+		var width = boardSize * 100 + 4 * spaceBetweenTiles;
+		var height = boardSize * 100 + 4 * spaceBetweenTiles;
+		var game = new Phaser.Game(width, height, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+		function preload() {
+			// load on-off lights
+			game.load.image('on', 'assets/on.png');
+			game.load.image('off', 'assets/off.png');
+		};
+
+		function create() {
+			// create the grid
+			for(var i=0;i<boardSize;i++) {
+				for(var j=0;j<boardSize;j++) {
+					var x = i * 100 + i * spaceBetweenTiles; 
+					var y = j * 100 + j * spaceBetweenTiles;
+
+					var onOrOff = randomIntFromInterval(1,2);
+					var tile = game.add.sprite(x, y, (onOrOff === 1 ? 'on' : 'off'));
+					tile.inputEnabled = true;
+
+					// attach the input down event
+					tile.events.onInputDown.add(onTileClicked, tile);
+
+					tilesMatrix[i][j] = tile;
+				}
+			}
+		};
+
+		function update() {
+			
+		};
+
+		function toggle(tile) {
+			var newState = tile.key === 'on' ? 'off' : 'on';
+			tile.loadTexture(newState);
+		};
+
+		function onTileClicked() {
+			moves++;
+			toggle(this);
+
+			var x = Math.floor(this.x / 100),
+				y = Math.floor(this.y / 100);
+
+			// toggle all neighbours
+			for(var i=0;i<4;i++) {
+				var nx = x + dx[i],
+					ny = y + dy[i];
+				if(nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize) {
+					toggle(tilesMatrix[nx][ny]);
+				}
+			}
+
+			checkGameOver();
+		};
+
+		function areAllStatesEqual() {
+			var state = tilesMatrix[0][0].key;
+			for(var i=0;i<boardSize;i++) {
+				for(var j=0;j<boardSize;j++) {
+					if(tilesMatrix[i][j].key !== state) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+		}
+		function checkGameOver() {
+			gameOver = areAllStatesEqual();
+
+			if(gameOver) {
+				alert('Great. It took you ' + moves + ' moves to complete it!');
+			}
+		};
+
+		function randomIntFromInterval(min,max)
+		{
+		    return Math.floor(Math.random()*(max-min+1)+min);
+		};
+
+	</script>
+</body>
+</html>
